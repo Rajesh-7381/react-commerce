@@ -2,6 +2,8 @@ const express=require("express");
 const cors=require("cors");
 const mysql2=require("mysql2");
 
+// for hashing password
+const bcrypt=require("bcrypt");
 
 const app=express();
 app.use(cors());
@@ -16,20 +18,29 @@ const db=mysql2.createPool({
 });
 
 
-app.post("/register", (req, res) => {
-    // console.log(req.body); // Log the incoming request body to check data
-    const values = [req.body.name, req.body.mobile, req.body.email, req.body.password];
-    const query = "INSERT INTO AdminUser (name, mobile, email, password) VALUES (?, ?, ?, ?)";
-    db.query(query, values, (err, data) => {
-        if (err) {
-            console.error("Error submitting form", err);
-            return res.status(500).json({ message: "Internal server error" });
-        } else {
-            res.json({ message: "User created successfully!" });
-        }
-    });
+// register user data
+app.post("/register", async (req, res) => {
+  // console.log(req.body); // Log the incoming request body to check data
+  const { name, mobile, email, password } = req.body;
+  const salt = await bcrypt.genSalt(10);
+  const hashedpassword = await bcrypt.hash(password, salt);
+
+  db.query(
+      "INSERT INTO AdminUser (name, mobile, email, password) VALUES (?, ?, ?, ?)",
+      [name, mobile, email, hashedpassword],
+      (err, data) => {
+          if (err) {
+              console.error("Error submitting form", err);
+              return res.status(500).json({ message: "Internal server error" });
+          } else {
+              res.json({ message: "User created successfully!" });
+          }
+      }
+  );
 });
 
+
+// login user data
 app.post("/login", (req, res) => {
   // console.log(req.body);
   const { email, password } = req.body; // Assume the request includes email and password
@@ -74,18 +85,83 @@ app.get('/countuser', (req, res) => {
 });
 
 
-
-app.get('/alldata',(req,res)=>{
-    const sql="select * from AdminUser";
-    db.query(sql,(err,data)=>{
-      if(err){
-        return res.json({message:"internal server error"});
+// show all user data
+app.get('/alldata', (req, res) => {
+  const sql = "SELECT * FROM AdminUser";
+  db.query(sql, (err, data) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: "Internal server error" });
       }
-    //   console.log(data)
       return res.json(data);
-      
-    })
+  });
+});
+
+
+// show single data
+app.get("/singledata/:id",(req,res)=>{
+  const id=req.params.id;
+  
+  const query="select * from AdminUser where id=?";
+  db.query(query,id,(err,result)=>{
+    if(err){
+      console.error("error fetching data",err);
+      return res.status(500).json({message:"internal server error"});
+    }
+    if(result.length===0){
+      return res.status(404).json({message:"data not found!"});
+    }
+    return res.status(200).json({message:"data fetched successfully!",data:result[0]});
+
+    }
+  )
+})
+
+// editdata
+app.get("/editdata/:id", (req, res) => {
+  const id = req.params.id;
+  // console.log(id);
+  const query = "select * from AdminUser where id=?";
+  db.query(query, [id], (err, result) => {
+      if (err) {
+          console.error("error fetching data", err);
+          return res.status(500).json({ message: "internal server error" });
+      }
+      if (result.length === 0) {
+          return res.status(404).json({ message: "data not found!" });
+      }
+      return res.status(200).json({ message: "data fetched successfully!", data: result[0] });
+  });
+});
+
+// Add update user endpoint
+app.put("/update/:id", (req, res) => {
+  const id = req.params.id;
+  // console.log(id)
+  const { name, mobile, email, password, role } = req.body;
+  const query = "UPDATE AdminUser SET name=?, mobile=?, email=?, password=?, role=? WHERE id=?";
+
+  db.query(query, [name, mobile, email, password, role, id], (err, result) => {
+    if (err) {
+      console.error("Error updating data", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    return res.status(200).json({ message: "Data updated successfully!" });
+  });
+});
+
+// delete functionality
+app.delete("/deletesingledata/:id",(req,res)=>{
+  const id=req.params.id;
+  const query="DELETE FROM AdminUser WHERE id=?";
+  db.query(query,id,(err,result)=>{
+    if(err){
+      console.error(err);
+      return res.status(500).json({message:"internal server error"})
+    }
+    return res.status(200).json({message:"deleted sucessfully!"})
   })
+})
 
 app.listen(8081,()=>{
     console.log("server listening at port 8081");

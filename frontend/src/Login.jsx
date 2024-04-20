@@ -2,15 +2,21 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {  useFormik } from 'formik';
 import axios from 'axios';
+import * as Yup from 'yup';
 
 const Login = () => {
   const navigate=useNavigate();
+  const [pass,setpass]=useState(false);
     const formik=useFormik({
         initialValues:{
             email:'',
             password:'',
             check:false
         },
+        validationSchema:Yup.object({
+          email:Yup.string().required("please enter your email!"),
+          password:Yup.string().required("please enter your password!")
+        }),
         onSubmit: async (values, action) => {
           // console.log("Form values:", values);
           try {
@@ -59,7 +65,7 @@ const Login = () => {
             <li className="has-separator">
               <a href="index.html">Home</a></li>
             <li className="is-marked">
-              <a href="signin.html">Signin</a></li>
+              <Link to={"/"}>Signin</Link></li>
           </ul>
         </div>
       </div>
@@ -101,11 +107,18 @@ const Login = () => {
                 <div className="u-s-m-b-30">
                   <label className="gl-label text-start" htmlFor="login-email">E-MAIL <span className='text-danger'>*</span></label>
                   <input className="input-text input-text--primary-style" name="email" type="email" id="login-email" placeholder="Enter E-mail"  autoComplete="username" onChange={formik.handleChange}/>
+                  {formik.touched.email && formik.errors.email ? (
+                    <div className="text-danger">{formik.errors.email}</div>
+                ) : null}
                   <p className="login-email" />
                 </div>
                 <div className="u-s-m-b-30">
                   <label className="gl-label text-start" htmlFor="login-password">PASSWORD <span className='text-danger'>*</span></label>
-                  <input className="input-text input-text--primary-style" name="password" type="password" id="login-password" placeholder="Enter Password" autoComplete="current-password" onChange={formik.handleChange} />
+                  <input className="input-text input-text--primary-style" name="password" type={pass ? 'text' : 'password'} id="login-password" placeholder="Enter Password" autoComplete="current-password" onChange={formik.handleChange} />
+                  <p style={{position: "absolute", top: "68%", right: "39px", transform: "translateY(-40%)", cursor: "pointer"}} onClick={()=>setpass(!pass)}>{(pass) ? <i className='fas fa-solid fa-eye-slash'></i> : <i className='fas fa-eye'></i>}</p>
+                  {formik.touched.password && formik.errors.password ? (
+                    <div className="text-danger">{formik.errors.password}</div>
+                ) : null}
                   <p className="login-password" /></div>
                   <div className="u-s-m-b-30">
                   {/*====== Check Box ======*/}

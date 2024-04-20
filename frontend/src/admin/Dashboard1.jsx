@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+
+
 const Dashboard1 = () => {
   const [count, setCount] = useState(0);  // Initialize to 0 as default
   
@@ -208,10 +210,10 @@ const Dashboard1 = () => {
             </a>
             <ul className="nav nav-treeview">
               <li className="nav-item">
-                <a href="./index.html" className="nav-link active">
+                <Link to={"/registeruser"} className="nav-link active">
                   <i className="far fa-circle nav-icon" />
                   <p>Registered User</p>
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
                 <a href="./index2.html" className="nav-link">

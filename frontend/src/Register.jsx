@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import * as Yup from 'yup';
 import axios from "axios";
@@ -8,6 +8,7 @@ import 'react-notifications/lib/notifications.css';
 
 const Register = () => {
     const navigate=useNavigate();
+    const [pass,setpass]=useState(false);
     
     const initialValues={
         name:"",
@@ -18,7 +19,7 @@ const Register = () => {
     const validationSchema=Yup.object({
         name:Yup.string().max(100).min(3).required("please enter your name!"),
         mobile:Yup.string().max(10).min(10).required("Mobile number required!"),
-        email:Yup.string().max(100).min(6).required("please enter your email!"),
+        email:Yup.string().max(100).min(2).required("please enter your email!"),
         password:Yup.string().max(30).min(6).required("please enter your password!"),
 
     })
@@ -95,7 +96,8 @@ const Register = () => {
                   </div>
                 <div className="u-s-m-b-30">
                   <label className="gl-label text-start" htmlFor="reg-password">PASSWORD <span className='text-danger'>*</span></label>
-                  <input className="input-text input-text--primary-style" type="text" id="reg-password" placeholder="Enter Password" name='password' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password}/>
+                  <input className="input-text input-text--primary-style" type={pass ? 'text' : 'password'} id="reg-password" placeholder="Enter Password" name='password' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.password}/>
+                  <p style={{position: "absolute", top: "68%", right: "39px", transform: "translateY(-40%)", cursor: "pointer"}} onClick={()=>setpass(!pass)}>{(pass) ? <i className='fas fa-solid fa-eye-slash'></i> : <i className='fas fa-eye'></i>}</p>
                   {formik.touched.password && formik.errors.password ? (
                     <div className="text-danger">{formik.errors.password}</div>
                 ) : null}
