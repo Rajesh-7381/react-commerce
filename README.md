@@ -38,6 +38,8 @@ install bootstarp icons ->npm install bootstrap-icons add in index.js-> import "
     ->import 'jspdf-autotable'; import these file otheerwise not downloadable
 12. -><npm i reactstrap>
 12. -><npm install sweetalert2>
+12. -><npm i zxcvbn> (for progress bar(strong password))
+13. ->npm install react-hook-form(for form validation and update purpose)
 
 abstract::
 =========
@@ -65,6 +67,18 @@ day-5::(addeditregister.jsx)
 ->show password icon functionality
 ->in registering time data goes to database (password) in hashing format
 
+day-6::
+======
+->show data in table format
+->eye functionality
+->csv download
+->searching functionality
+day-7::
+=======
+->update functionalty (using react-form-hook)
+->delete functionality
+->type column role data shown
+->add tracker functionality like if user or admin or subadmin without login they can not acess dashboard or any other page
 
                              backend::
                              =========
@@ -82,4 +96,5 @@ day-5::(addeditregister.jsx)
                                             bug::
                                             ====
 ->validation not worked in addeditregister.jsx(update form)
-->show user data like(ok,cancel,cross icon) not worked.
+->show user data like(ok,cancel,cross icon) not worked.   (bug fixed successfully!)
+->show user data like(ok,cancel,cross icon) not worked.(subadmin.jsx)  (bug fixed successfully!)

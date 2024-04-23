@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 const Login = () => {
   const navigate=useNavigate();
   const [pass,setpass]=useState(false);
+  const [loggedin,setloggedin]=useState(0);
     const formik=useFormik({
         initialValues:{
             email:'',
@@ -27,10 +28,14 @@ const Login = () => {
             if (data.status === 1) {
               switch(data.role) {
                 case 'admin':
+                  sessionStorage.setItem("loggedin", "1");
                   navigate("/admindashboard1"); // Redirect to user dashboard
+                  
                   break;
                 case 'user':
+                  sessionStorage.setItem("loggedin", "1");
                   navigate("/userdashboard2"); // Redirect to admin dashboard
+                  
                   break;
                 default:
                   navigate("/"); // Default redirection if no role matched

@@ -10,6 +10,7 @@ import * as Yup from 'yup';
 import Swal from 'sweetalert2';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import zxcvbn from 'zxcvbn';
 
 const AddEditRegisterUser = (args) => {
    
@@ -24,6 +25,7 @@ const AddEditRegisterUser = (args) => {
   const [modaldata, setmodaldata] = useState({});
 
   const [id, setId] = useState(""); // Define id state
+  const [passwordstrength,setPasswordStrength]=useState(0);
 
   const toggle = async (id) => {
     try {
@@ -32,6 +34,7 @@ const AddEditRegisterUser = (args) => {
       setModal(!modal);
     } catch (error) {
       console.error("error fetching data", error);
+      setModal(!modal);
     }
   };
 
@@ -210,7 +213,13 @@ const handledelete = async (id) => {
     }
   };
   
-
+ // Function to handle password change and update password strength
+ const handlePasswordChange = (event) => {
+    const { value } = event.target;
+    const result = zxcvbn(value);
+    setPasswordStrength(result.score);
+    formik.handleChange(event); // Update formik values
+  };
   return (
     <div>
       <section className="content">
@@ -219,7 +228,7 @@ const handledelete = async (id) => {
             <div className="col-12">
               <div className="card">
                 <div className="card-header ">
-                  <h1 className="card-title " style={{margin:"auto",width:"100%" ,fontWeight:"bold"}}><span className='badge badge-pill badge-info'>Registered User Data</span></h1>
+                  <h1 className="card-title " style={{margin:"auto",width:"100%" ,fontWeight:"bold"}}><span className='badge badge-pill badge-warning'>Admin/</span><span className='badge badge-pill badge-info'>Registered User Data</span></h1>
                 </div>
                 <div className="card-body">
                   <form className='d-flex align-items-center justify-content-end'>
@@ -336,6 +345,7 @@ const handledelete = async (id) => {
                     </div>
                     {/* /.card-header */}
                     {/* form start */}
+                    
                     <form onSubmit={formik.handleSubmit}>
 
                       <div className="card-body">
@@ -351,15 +361,24 @@ const handledelete = async (id) => {
                           {formik.touched.email && formik.errors.email ? <div className="text-danger">{formik.errors.email}</div> : null}
                         </div>
                         <div className="form-group">
-                          <label htmlFor="exampleInputMobile"><i class="fas fa-solid fa-phone"></i> Email Mobile</label>
+                          <label htmlFor="exampleInputMobile"><i class="fas fa-solid fa-phone"></i>  Mobile</label>
                           <input type="text" className="form-control" id="exampleInputMobile" placeholder="Enter Mobile" name='mobile' value={formik.values.mobile} onChange={formik.handleChange} onBlur={formik.handleBlur} />
                         </div>
 
                         <div className="form-group">
                           <label htmlFor="exampleInputPassword1"><i className='fas fa-lock'></i> Password</label>
-                          <input type={pass ? 'text' : 'password'} className="form-control" id="exampleInputPassword1" placeholder="Password" name='password' value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur} autoComplete='current-password' />
-                          <p style={{position: "absolute", top: "66%", right: "23px", transform: "translateY(-40%)", cursor: "pointer"}} onClick={()=>setpass(!pass)}>{(pass) ? <i className='fas fa-solid fa-eye-slash'></i> : <i className='fas fa-eye'></i>}</p>
+                          <input type={pass ? 'text' : 'password'} className="form-control" id="exampleInputPassword1" placeholder="Password" name='password' value={formik.values.password} onChange={(e) => {formik.handleChange(e);handlePasswordChange(e);}} onBlur={formik.handleBlur} autoComplete='current-password' />
+                          <p style={{position: "absolute", top: "63%", right: "23px", transform: "translateY(-40%)", cursor: "pointer"}} onClick={()=>setpass(!pass)}>{(pass) ? <i className='fas fa-solid fa-eye-slash'></i> : <i className='fas fa-eye'></i>}</p>
                           {formik.touched.password && formik.errors.password ? <div className="text-danger">{formik.errors.password}</div> : null}
+                          <div className='progress mt-2'>
+                            <div className={`progress-bar ${passwordstrength === 0 ? 'bg-danger' :passwordstrength === 1 ? 'bg-warning' : passwordstrength === 2 ? 'bg-info' : passwordstrength === 3 ? 'bg-primary' :  'bg-success'}`} role='progressbar' style={{width : `${(passwordstrength + 1) * 25}%`}} aria-valuenow={(passwordstrength + 1) * 25} aria-valuemin="0" aria-valuemax="100">
+                                {passwordstrength === 0 && "0%"}
+                                {passwordstrength === 1 && "25%"}
+                                {passwordstrength === 2 && "50%"}
+                                {passwordstrength === 3 && "75%"}
+                                {passwordstrength === 4 && "100%"}
+                            </div>
+                          </div>
                         </div>
                         <div className="form-group">
                           <label><i className='fas fa-user'></i> Role<span className='text-danger'>*</span></label>
@@ -374,7 +393,7 @@ const handledelete = async (id) => {
                       </div>
                       {/* /.card-body */}
                       <div className="card-footer">
-                        <button type="submit" className="btn btn-success">Submit</button>
+                        <button  type="submit" className="btn btn-success">Submit</button>
                       </div>
                     </form>
                   </div>

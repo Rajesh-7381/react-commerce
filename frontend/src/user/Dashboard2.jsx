@@ -1,7 +1,14 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Dashboard2 = () => {
+  const navigate=useNavigate();
+  useEffect(()=>{
+    const loggedin=sessionStorage.getItem("loggedin");
+    if(!loggedin || loggedin!=="1"){
+      navigate("/");
+    }
+  },[navigate])
   return (
     <div>
     <div>

@@ -137,7 +137,7 @@ app.get("/editdata/:id", (req, res) => {
 // Add update user endpoint
 app.put("/update/:id", (req, res) => {
   const id = req.params.id;
-  // console.log(id)
+  console.log(id)
   const { name, mobile, email, password, role } = req.body;
   const query = "UPDATE AdminUser SET name=?, mobile=?, email=?, password=?, role=? WHERE id=?";
 
@@ -160,6 +160,20 @@ app.delete("/deletesingledata/:id",(req,res)=>{
       return res.status(500).json({message:"internal server error"})
     }
     return res.status(200).json({message:"deleted sucessfully!"})
+  })
+})
+
+
+// subadmins see all subadmins and user data
+app.get("/subadmindata",(req,res)=>{
+  const query ="select * from  AdminUser where role in('subadmin' ,'user')";
+  db.query(query,(err,result)=>{
+    if(err){
+      console.error(err);
+      return res.status(500).json({message:"internal server error"});
+    }
+    // return res.status(200).json({message:"data get successfully!"})
+    return res.json(result);
   })
 })
 

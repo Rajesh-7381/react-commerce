@@ -6,6 +6,8 @@ import Register from './Register';
 import Dashboard1 from './admin/Dashboard1';
 import Dashboard2 from './user/Dashboard2';
 import AddEditRegisterUser from './admin/AddEditRegisterUser';
+import Subadmin from './admin/Subadmin';
+import SubAdminAddEdit from './admin/SubAdminAddEdit';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
 
           <Route path='/admindashboard1' element={< Dashboard1/>}></Route>
           <Route path='/registeruser' element={< AddEditRegisterUser/>}></Route>
+          <Route path='/subadmins' element={< Subadmin/>}></Route>
+          <Route path='/subadminaddedit' element={< SubAdminAddEdit/>}></Route>
 
 
 

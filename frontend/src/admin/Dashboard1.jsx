@@ -1,13 +1,23 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link,useHistory, useNavigate } from 'react-router-dom';
 
 
 const Dashboard1 = () => {
+  const navigate=useNavigate()
   const [count, setCount] = useState(0);  // Initialize to 0 as default
   
 
   useEffect(() => {
+    const loggedin=sessionStorage.getItem("loggedin");
+    if(!loggedin || loggedin !=="1"){
+      navigate("/");
+    }
+    
+  }, [navigate]);
+
+  useEffect(() => {
+    
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8081/countuser"); // Updated URL
@@ -23,6 +33,8 @@ const Dashboard1 = () => {
 
     fetchData();
   }, []);
+
+  
   return (
     
     <div>
@@ -204,7 +216,7 @@ const Dashboard1 = () => {
             <a href="#" className="nav-link active">
               <i className="nav-icon fas fa-tachometer-alt" />
               <p>
-                Dashboard
+                Admin Management
                 <i className="right fas fa-angle-left" />
               </p>
             </a>
@@ -216,10 +228,10 @@ const Dashboard1 = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <a href="./index2.html" className="nav-link">
+                <Link to={"/subadmins"} className="nav-link">
                   <i className="far fa-circle nav-icon" />
-                  <p>Dashboard v2</p>
-                </a>
+                  <p>Subadmins</p>
+                </Link>
               </li>
               <li className="nav-item">
                 <a href="./index3.html" className="nav-link">
