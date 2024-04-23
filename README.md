@@ -39,7 +39,8 @@ install bootstarp icons ->npm install bootstrap-icons add in index.js-> import "
 12. -><npm i reactstrap>
 12. -><npm install sweetalert2>
 12. -><npm i zxcvbn> (for progress bar(strong password))
-13. ->npm install react-hook-form(for form validation and update purpose)
+13. -><npm install react-hook-form>(for form validation and update purpose)
+14. -><npm install chart.js>(for pie chart data shown)
 
 abstract::
 =========
@@ -69,16 +70,29 @@ day-5::(addeditregister.jsx)
 
 day-6::
 ======
-->show data in table format
-->eye functionality
-->csv download
-->searching functionality
+->show data in table format(subadmin.jsx)
+->eye functionality(subadmin.jsx)
+->csv download(subadmin.jsx)
+->searching functionality(subadmin.jsx)
 day-7::
 =======
-->update functionalty (using react-form-hook)
-->delete functionality
-->type column role data shown
-->add tracker functionality like if user or admin or subadmin without login they can not acess dashboard or any other page
+->update functionalty (using react-form-hook)(subadmin.jsx)
+->delete functionality(subadmin.jsx)
+->type column role data shown(subadmin.jsx)
+->add tracker functionality like if user or admin or subadmin without login they can not acess dashboard or any other page (user dashboard and admin dashboard using session)
+
+day-8::
+======
+->print page functionality(subadmin.jsx)
+->pdf format download(subadmin.jsx)
+->remember me functionalty in login page (add email and password store in cookies and expariry time)
+->count user,admin,and subadmin shown in admin dashboard
+->also data shown in pie chart format
+
+
+
+
+
 
                              backend::
                              =========
@@ -98,3 +112,9 @@ day-7::
 ->validation not worked in addeditregister.jsx(update form)
 ->show user data like(ok,cancel,cross icon) not worked.   (bug fixed successfully!)
 ->show user data like(ok,cancel,cross icon) not worked.(subadmin.jsx)  (bug fixed successfully!)
+
+
+
+
+
+<!-- inbuilt changes -->

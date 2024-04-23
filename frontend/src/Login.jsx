@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {  useFormik } from 'formik';
 import axios from 'axios';
 import * as Yup from 'yup';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const navigate=useNavigate();
@@ -24,16 +25,33 @@ const Login = () => {
             const response = await axios.post("http://localhost:8081/login", values);
             console.log("Response Status:", response.status);
             const data = response.data;
-            // console.log(data);
+            console.log(data);
+            Cookies.set('id', data.id, { expires: 1 / 24 });
             if (data.status === 1) {
+              
+                if(values.check){
+                  Cookies.set('email', values.email, { expires: 1 / 24 });
+                  Cookies.set('password', values.password, { expires: 1 / 24 });
+                  
+                }
               switch(data.role) {
                 case 'admin':
+                  
                   sessionStorage.setItem("loggedin", "1");
+                  
+                  navigate("/admindashboard1"); // Redirect to user dashboard
+                  
+                  break;
+                case 'subadmin':
+                  
+                  sessionStorage.setItem("loggedin", "1");
+                  
                   navigate("/admindashboard1"); // Redirect to user dashboard
                   
                   break;
                 case 'user':
                   sessionStorage.setItem("loggedin", "1");
+                  
                   navigate("/userdashboard2"); // Redirect to admin dashboard
                   
                   break;

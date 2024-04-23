@@ -41,34 +41,38 @@ app.post("/register", async (req, res) => {
 
 
 // login user data
-app.post("/login", (req, res) => {
-  // console.log(req.body);
-  const { email, password } = req.body; // Assume the request includes email and password
-  const query = "SELECT * FROM AdminUser WHERE email = ? AND password = ?";
 
-  db.query(query, [email, password], (err, data) => {
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  const query = "SELECT * FROM AdminUser WHERE email = ?";
+  db.query(query, [email], async (err, data) => {
     if (err) {
       console.error("Login unsuccessful:", err);
       return res.status(500).json({ message: "Internal server error" });
     } else if (data.length > 0) {
       const user = data[0];
-      console.log(user);
-      // If user exists with provided email and password
-      res.json({
-        status: 1, 
-        message: "Login successful",
-        role: user.role // Send the role to the frontend
-      });
+      const match = await bcrypt.compare(password, user.password);
+      if (match) {
+        res.json({
+          status: 1, 
+          message: "Login successful",
+          role: user.role,
+          id: user.id
+        });
+      } else {
+        res.json({ status: 0, message: "Invalid email or password" });
+      }
     } else {
-      // If no user found with provided credentials
       res.json({ status: 0, message: "Invalid email or password" });
     }
   });
 });
 
+
 // count user
 app.get('/countuser', (req, res) => {
-  const query = "SELECT COUNT(id) AS total FROM AdminUser"; // Alias 'count(id)' as 'total'
+  const query = "SELECT COUNT(id) AS total FROM AdminUser where role='user'"; // Alias 'count(id)' as 'total'
   db.query(query, (err, data) => {
     if (err) {
       return res.status(500).json({message: "Internal server error"});
@@ -78,6 +82,40 @@ app.get('/countuser', (req, res) => {
       // console.log("Total Users:", count);
       res.json({
         count: count
+        
+      });
+    }
+  });
+});
+// count admin
+app.get('/countadmin', (req, res) => {
+  const query = "SELECT COUNT(id) AS total FROM AdminUser where role='admin'"; // Alias 'count(id)' as 'total'
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({message: "Internal server error"});
+    } else {
+      const Admincount = data[0].total; // Access using the alias 'total'
+      // const count2 = data[0].email; // Access using the alias 'total'
+      // console.log("Total Users:", count);
+      res.json({
+        Admincount: Admincount
+        
+      });
+    }
+  });
+});
+// subadmin count
+app.get('/countsubadmin', (req, res) => {
+  const query = "SELECT COUNT(id) AS total FROM AdminUser where role='subadmin'"; // Alias 'count(id)' as 'total'
+  db.query(query, (err, data) => {
+    if (err) {
+      return res.status(500).json({message: "Internal server error"});
+    } else {
+      const subaAdmincount = data[0].total; // Access using the alias 'total'
+      // const count2 = data[0].email; // Access using the alias 'total'
+      // console.log("Total Users:", count);
+      res.json({
+        subaAdmincount: subaAdmincount
         
       });
     }
@@ -137,7 +175,7 @@ app.get("/editdata/:id", (req, res) => {
 // Add update user endpoint
 app.put("/update/:id", (req, res) => {
   const id = req.params.id;
-  console.log(id)
+  // console.log(id)
   const { name, mobile, email, password, role } = req.body;
   const query = "UPDATE AdminUser SET name=?, mobile=?, email=?, password=?, role=? WHERE id=?";
 

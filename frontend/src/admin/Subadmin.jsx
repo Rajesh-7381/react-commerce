@@ -5,6 +5,8 @@ import { CSVLink } from 'react-csv';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Swal from 'sweetalert2';
+import jsPDF, {JsPdf} from 'jspdf';
+import 'jspdf-autotable';
 
 const Subadmin = (args) => {
     const navigate=useNavigate();
@@ -109,6 +111,34 @@ const Subadmin = (args) => {
         
     }
 
+    // print page
+    const printpage=()=>{
+        window.print();
+    }
+
+    // pdf format download
+    const PdfFormat=()=>{
+        const doc=new jsPDF();
+        const tablecolumn=["SLNO","NAME","EMAIL","MOBILE","ROLE"];
+        const tablerows=[];
+
+        data.forEach((item,index)=>{
+            const tabledata=[
+                index+1,
+                item.name,
+                item.email,
+                item.mobile,
+                item.role.toUpperCase()
+            ];
+            
+            tablerows.push(tabledata);
+        });
+        doc.autoTable(tablecolumn,tablerows,{startY:20});
+        doc.text("RegisteredUsers",14,15);
+        doc.save("RegisteredUsers.pdf");
+        NotificationManager.success("pdf format download sucessfully!");
+    }
+
     return (
         <div>
             <section className="content">
@@ -129,6 +159,10 @@ const Subadmin = (args) => {
                                                 <button className="btn btn-outline-success mr-5" type="button" >Search</button>
                                                 <NotificationContainer />
                                                  <CSVLink data={filterData} headers={headers} filename='Static_users.csv' target='_blank' className='btn btn-dark mr-5 '>Export CSV <i className="fas fa-solid fa-download"></i> </CSVLink>
+                                                 <Button className='btn btn-dark mr-5' onClick={printpage}>Print <i className="fas fa-solid fa-print"></i></Button>
+                                                 <NotificationContainer />
+                                                 <Button className='btn btn-dark mr-5' onClick={PdfFormat}>Pdf <i className="fas fa-solid fa-download"></i></Button>
+
                                                 <button className='btn btn-outline-danger text-dark  ' style={{ right: "10px", position: "absolute" }}><Link to={"/admindashboard1"}><i className="fas fa fa-arrow-circle-left">Back</i></Link></button>
                                             </div>
                                         </div>
