@@ -48,24 +48,59 @@
   <link rel="stylesheet" href="./admin-assets/plugins/summernote/summernote-bs4.min.css">
 
   <link rel="stylesheet" href="./admin-assets/plugins/select2/css/select2.min.css">
-  <!-- <link rel="stylesheet" href="admin-assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css"> -->
+  <link rel="stylesheet" href="admin-assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <!--====== Google Font ======-->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
+
+
+
+
+  <!--====== Vendor Css ======-->
+  <link rel="stylesheet" href="./frontend/css/vendor.css">
+  
+  <!--====== Utility-Spacing ======-->
+  <link rel="stylesheet" href="./frontend/css/utility.css">
+  <!--====== App ======-->
+  <link rel="stylesheet" href="./frontend/css/app.css">
+  <link rel="stylesheet" href="./frontend/css/alert.css">
+  <style>
+    .loader
+    {
+      background: rgba( 255, 255, 255, 0.8 );
+      display: none;
+      height: 100%;
+      position: fixed;
+      width: 100%;
+      z-index: 9999;
+    }
+    
+    .loader img
+    {
+      left: 50%;
+      margin-left: -32px;
+      margin-top: -32px;
+      position: absolute;
+      top: 50%;
+      width: 64px; /* Adjust to the desired width */
+      height: 64px;
+    }
+    </style>
 
   <!-- for user -->
     <title>React E-commerce </title>
-        <!--====== Google Font ======-->
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
-        <!--====== Vendor Css ======-->
-        <link rel="stylesheet" href="./frontend/css/vendor.css">
         
-        <!--====== Utility-Spacing ======-->
-        <link rel="stylesheet" href="./frontend/css/utility.css">
-        <!--====== App ======-->
-        <link rel="stylesheet" href="./frontend/css/app.css">
   </head>
   <body>
     <!-- Preloader -->
-  <div class="preloader flex-column justify-content-center align-items-center">
-    <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+    <div class="loader">
+      {{-- <img src="./frontend/images/loader3.gif" alt="loading..." /> --}}
+      <img src="https://i.gifer.com/ZKZg.gif" alt="loading..." />
+
+   </div>   
+  <div class="preloader is-active">
+      <div class="preloader__wrap">
+          <img class="preloader__img" src="./frontend/images/preloader.png" alt="">
+      </div>
   </div>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
@@ -157,6 +192,7 @@
   <!--====== App ======-->
   <script src="./frontend/js/app.js"></script>
 
+
 <!-- <script>
   $(function () {
     $("#example1").DataTable({
@@ -193,3 +229,10 @@
   </noscript>
   </body>
 </html>
+<script>
+  $(document).ready(function(){
+    $("#formid").on("submit", function(){
+      $(".loader").show();
+    });//submit
+  });//document ready
+  </script>

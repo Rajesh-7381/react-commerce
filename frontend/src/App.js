@@ -8,6 +8,8 @@ import Dashboard2 from './user/Dashboard2';
 import AddEditRegisterUser from './admin/AddEditRegisterUser';
 import Subadmin from './admin/Subadmin';
 import SubAdminAddEdit from './admin/SubAdminAddEdit';
+import Categories from './admin/Categories/Categories';
+import CategoryAddEdit from './admin/Categories/CategoryAddEdit';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
           <Route path='/registeruser' element={< AddEditRegisterUser/>}></Route>
           <Route path='/subadmins' element={< Subadmin/>}></Route>
           <Route path='/subadminaddedit' element={< SubAdminAddEdit/>}></Route>
+          <Route path='/categories' element={< Categories/>}></Route>
+          <Route path='/categoriesaddedit' element={< CategoryAddEdit/>}></Route>
 
 
 

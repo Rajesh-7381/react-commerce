@@ -89,7 +89,10 @@ day-8::
 ->count user,admin,and subadmin shown in admin dashboard
 ->also data shown in pie chart format
 
-
+day-9::
+======
+->update and show category data also edit and update data and delete functionality
+->soft delte functionality both adminuser and categories table
 
 
 
@@ -118,3 +121,58 @@ day-8::
 
 
 <!-- inbuilt changes -->
+in dashboard2.jsx  line number 1028 to 1068 comment out
+below code
+
+ <!-- {/*<div className="s-skeleton s-skeleton--h-600 s-skeleton--bg-grey">
+        <div className="owl-carousel primary-style-1" id="sitemakers-slider">
+        <div className="sitemakers-slide sitemakers-slide--1" style={{backgroundImage: `url("./frontend/images/banners/sitemaker-slider-banner-1.png")`}}>
+        <div className="container">
+              <div className="row">
+                <div className="col-12">
+                  <div className="slider-content slider-content--animation">
+                    <span className="content-span-2 u-c-secondary">10% Off on T-Shirts</span>
+                    <a className="shop-now-link btn--e-brand" href="shop-side-version-2.html">SHOP NOW</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="sitemakers-slide sitemakers-slide--2" style={{backgroundImage: `url("./frontend/images/banners/sitemaker-slider-banner-2.png")`}}>
+            <div className="container">
+              <div className="row">
+                <div className="col-12">
+                  <div className="slider-content slider-content--animation">
+                    <span className="content-span-2 u-c-secondary">20% Off on T-Shirts</span>
+                    <a className="shop-now-link btn--e-brand" href="shop-side-version-2.html">SHOP NOW</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="sitemakers-slide sitemakers-slide--3" style={{backgroundImage: `url("./frontend/images/banners/sitemaker-slider-banner-3.png")`}}>
+            <div className="container">
+              <div className="row">
+                <div className="col-12">
+                  <div className="slider-content slider-content--animation">
+                    <span className="content-span-2 u-c-secondary">15% Off on Jackets</span>
+                    <a className="shop-now-link btn--e-brand" href="shop-side-version-2.html">SHOP NOW</a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>*/} -->
+
+
+
+2.also change in app.css line number 989
+before
+.aspect__img {
+  position: absolute;
+  width: 100%;
+  height: 100%; }
+
+  after change
+.aspect__img {
+  position: relative;
+  width: 100%;
+  height: 100%; }      

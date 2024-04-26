@@ -987,7 +987,7 @@ input::-ms-clear {
   * you can use utility u-img-fluid class.
  */
 .aspect__img {
-  position: absolute;
+  position: relative;
   width: 100%;
   height: 100%; }
 
@@ -6409,3 +6409,33 @@ input::-ms-clear {
 #js-product-detail-modal-thumbnail:hover .pt-prev, #js-product-detail-modal-thumbnail:hover .pt-next {
   opacity: .8; }
 
+  /* For mobile devices */
+@media screen and (max-width: 767px) {
+  /* CSS for mobile devices */
+  body{
+    .card-header{
+      background-color: red;
+    }
+    .backbtn{
+      display: block;
+      margin-left: auto;
+      margin-right: -99%;
+      top: 50px;
+    }
+    .searchbtn{
+      
+    }
+  }
+}
+
+/* For tablets */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  /* CSS for tablets */
+}
+
+/* For laptops and desktops */
+@media screen and (min-width: 1024px) {
+  /* CSS for laptops and desktops */
+}
+
+  

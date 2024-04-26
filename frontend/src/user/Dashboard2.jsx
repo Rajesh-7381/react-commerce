@@ -57,16 +57,16 @@ const Dashboard2 = () => {
                           <span>Account</span></a>
                       </li>
                       <li>
-                        <a href="signup.html"><i className="fas fa-user-plus u-s-m-r-6" />
-                          <span>Signup</span></a>
+                        <Link to={"/register"}><i className="fas fa-user-plus u-s-m-r-6" />
+                          <span>Signup</span></Link>
                       </li>
                       <li>
-                        <a href="signin.html"><i className="fas fa-lock u-s-m-r-6" />
-                          <span>Signin</span></a>
+                        <Link to={"/"}><i className="fas fa-lock u-s-m-r-6" />
+                          <span>Signin</span></Link>
                       </li>
                       <li>
-                        <a href="signup.html"><i className="fas fa-lock-open u-s-m-r-6" />
-                          <span>Signout</span></a>
+                        <Link to={"/"}><i className="fas fa-lock-open u-s-m-r-6" />
+                          <span>Signout</span></Link>
                       </li>
                     </ul>
                     {/*====== End - Dropdown ======*/}
@@ -736,7 +736,7 @@ const Dashboard2 = () => {
                             <div className="col-lg-6 mega-image">
                               <div className="mega-banner">
                                 <a className="u-d-block" href="shop-side-version-2.html">
-                                  <img className="u-img-fluid u-d-block" src="./frontend/images/banners/sitemaker-slider-banner-1.png" alt="" /></a>
+                                  <img className="u-img-fluid u-d-block" src="./frontend/images/newsletter/subscribe-now.png" alt="" /></a>
                               </div>
                             </div>
                           </div>
@@ -774,6 +774,7 @@ const Dashboard2 = () => {
             </div>
             {/*====== End - Dropdown Main plugin ======*/}
             {/*====== Dropdown Main plugin ======*/}
+            
             <div className="menu-init" id="navigation2">
               <button className="btn btn--icon toggle-button toggle-button--secondary fas fa-cog" type="button" />
               {/*====== Menu ======*/}
@@ -1024,10 +1025,10 @@ const Dashboard2 = () => {
     {/*====== App Content ======*/}
     <div className="app-content">
       {/*====== Primary Slider ======*/}
-      <div className="s-skeleton s-skeleton--h-600 s-skeleton--bg-grey">
+      {/*<div className="s-skeleton s-skeleton--h-600 s-skeleton--bg-grey">
         <div className="owl-carousel primary-style-1" id="sitemakers-slider">
-          <div className="sitemakers-slide sitemakers-slide--1" style={{backgroundImage: 'url("images/banners/sitemaker-slider-banner-1.png")'}}>
-            <div className="container">
+        <div className="sitemakers-slide sitemakers-slide--1" style={{backgroundImage: `url("./frontend/images/banners/sitemaker-slider-banner-1.png")`}}>
+        <div className="container">
               <div className="row">
                 <div className="col-12">
                   <div className="slider-content slider-content--animation">
@@ -1037,7 +1038,7 @@ const Dashboard2 = () => {
               </div>
             </div>
           </div>
-          <div className="sitemakers-slide sitemakers-slide--2" style={{backgroundImage: 'url("images/banners/sitemaker-slider-banner-2.png")'}}>
+          <div className="sitemakers-slide sitemakers-slide--2" style={{backgroundImage: `url("./frontend/images/banners/sitemaker-slider-banner-2.png")`}}>
             <div className="container">
               <div className="row">
                 <div className="col-12">
@@ -1048,7 +1049,7 @@ const Dashboard2 = () => {
               </div>
             </div>
           </div>
-          <div className="sitemakers-slide sitemakers-slide--3" style={{backgroundImage: 'url("images/banners/sitemaker-slider-banner-3.png")'}}>
+          <div className="sitemakers-slide sitemakers-slide--3" style={{backgroundImage: `url("./frontend/images/banners/sitemaker-slider-banner-3.png")`}}>
             <div className="container">
               <div className="row">
                 <div className="col-12">
@@ -1060,7 +1061,8 @@ const Dashboard2 = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div>*/}
+
       {/*====== End - Primary Slider ======*/}
       {/*====== Section 1 ======*/}
       <div className="u-s-p-y-60">

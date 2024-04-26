@@ -4,6 +4,7 @@ import {  useFormik } from 'formik';
 import axios from 'axios';
 import * as Yup from 'yup';
 import Cookies from 'js-cookie';
+import { NotificationContainer,NotificationManager } from 'react-notifications';
 
 const Login = () => {
   const navigate=useNavigate();
@@ -25,7 +26,7 @@ const Login = () => {
             const response = await axios.post("http://localhost:8081/login", values);
             console.log("Response Status:", response.status);
             const data = response.data;
-            console.log(data);
+            // console.log(data);
             Cookies.set('id', data.id, { expires: 1 / 24 });
             if (data.status === 1) {
               
@@ -60,10 +61,12 @@ const Login = () => {
               }
             } else {
               // handle login error, show message to user
+              NotificationManager.danger("Invalid email or password", "Login Failed");
               console.log(data.message);
             }
           } catch (error) {
-            console.error("Login error:", error);
+            NotificationManager.error("invalid email or password")
+            // console.error("Login error:", error);
             // handle error, perhaps show a message to the user
           }
         }
@@ -155,6 +158,7 @@ const Login = () => {
                 <br></br>
                 <div className="gl-inline " >
                   <div className="u-s-m-b-30">
+                  <NotificationContainer />
                     <button className="btn btn--e-transparent-brand-b-2 btn-outline-primary w-75" type="submit">LOGIN</button>
                   </div>
                   <div className="u-s-m-b-30">

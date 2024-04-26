@@ -39,9 +39,7 @@ app.post("/register", async (req, res) => {
   );
 });
 
-
 // login user data
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -125,7 +123,7 @@ app.get('/countsubadmin', (req, res) => {
 
 // show all user data
 app.get('/alldata', (req, res) => {
-  const sql = "SELECT * FROM AdminUser";
+  const sql = "SELECT * FROM AdminUser where deleted_at is null";
   db.query(sql, (err, data) => {
       if (err) {
           console.error(err);
@@ -191,7 +189,7 @@ app.put("/update/:id", (req, res) => {
 // delete functionality
 app.delete("/deletesingledata/:id",(req,res)=>{
   const id=req.params.id;
-  const query="DELETE FROM AdminUser WHERE id=?";
+  const query="UPDATE AdminUser SET deleted_at = CURRENT_TIMESTAMP WHERE id=?";
   db.query(query,id,(err,result)=>{
     if(err){
       console.error(err);
@@ -214,6 +212,77 @@ app.get("/subadmindata",(req,res)=>{
     return res.json(result);
   })
 })
+
+// FOR CATEGORIES
+app.get("/categories", (req, res) => {
+  const query = "SELECT * FROM categories WHERE deleted_at IS NULL";
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    return res.json(data);
+  });
+});
+
+
+// add category
+app.post("/addcategory", (req, res) => {
+  const { category_name, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
+  const query = "INSERT INTO categories (category_name, category_discount, description, url, meta_title, meta_description, meta_keyword) VALUES ( ?, ?, ?, ?, ?, ?, ?)";
+  db.query(query, [category_name,  category_discount, description, url, meta_title, meta_description, meta_keyword], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json({ message: "Data inserted successfully!" });
+  });
+});
+
+// category single data
+app.get("/categoryeditdata/:id",(req,res)=>{
+  id=req.params.id;
+  const query="select * from categories where id=?";
+  db.query(query,id,(err,result)=>{
+    if(err){
+      console.error(err);
+      return res.status(500).json({message:"internal server error"});
+    }
+    if(result.length===0){
+      return res.status(404).json({ message: "data not found!" });
+    }
+    return res.status(200).json({message:"data fetched!",data:result[0]});
+  })
+})
+
+// update categories
+app.put("/updatecategory/:id", (req, res) => {
+  const id = req.params.id;
+  const { category_name, category_image, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
+  const query = "UPDATE categories SET category_name=?, category_image=?, category_discount=?, description=?, url=?, meta_title=?, meta_description=?, meta_keyword=? WHERE id=?";
+  db.query(query, [category_name, category_image, category_discount, description, url, meta_title, meta_description, meta_keyword, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    return res.status(200).json({ message: "Update successful!" });
+  });
+});
+
+
+// delete category
+app.delete("/categorydelete/:id", (req, res) => {
+  const id = req.params.id;
+  const query = "UPDATE categories SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?";
+  db.query(query, id, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    return res.status(200).json({ message: "Data deleted successfully!" });
+  });
+});
 
 app.listen(8081,()=>{
     console.log("server listening at port 8081");

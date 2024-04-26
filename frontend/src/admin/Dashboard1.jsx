@@ -65,15 +65,16 @@ const Dashboard1 = () => {
     chartinstance.current=new Chart(mychartref,{
       type:"pie",
       data:{
-        labels: ['Subadmin Registrations', 'User Registrations', 'Admin Registrations'],
+        labels: ['Admin Registrations', 'SubAdmin Registrations', 'User Registrations'],
         datasets:[
           {
             label: 'Registrations',
             data: [admincount, subadmincount, usercount],
             backgroundColor: [
+              'rgb(255, 205, 86)',
               'rgb(0,255,255)',
               'rgb(0,0,255)',
-              'rgb(255, 205, 86)'
+              
             ],
             
             hoverOffset: 4
