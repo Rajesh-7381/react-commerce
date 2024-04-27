@@ -95,6 +95,13 @@ day-9::
 ->soft delte functionality both adminuser and categories table
 
 
+day-10::
+======
+->create cms page (to admin perform all functionality)
+->in category and register profile page image inserting
+->in categories toggle status on/off
+
+
 
 
                              backend::
@@ -106,6 +113,8 @@ day-9::
     ->inside backend to run command(npm i mysql express nodemon cors)
     ->if mysql not worked to expicitly install(npm install mysql2)
     ->npm i bcrypt (for hashing password using sal and gensalt)
+    ->npm i multer (for file uploading)
+    ->npm i moment (for date)
 
 
 
@@ -176,3 +185,7 @@ before
   position: relative;
   width: 100%;
   height: 100%; }      
+
+
+
+

@@ -1,16 +1,17 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { NotificationManager,NotificationContainer } from 'react-notifications';
 
 const CategoryAddEdit = () => {
     const  location  = useLocation();
     const { register, handleSubmit, setValue } = useForm();
     const [data, setData] = useState({});
     const id = location.state ? location.state.id : null;
+    const navigate=useNavigate();
 
     useEffect(() => {
-        // console.log("Component rendered with ID:", id);
         if (id) {
             handleCategoryUpdate(id);
         }
@@ -20,7 +21,6 @@ const CategoryAddEdit = () => {
         try {
             const response = await axios.get(`http://localhost:8081/categoryeditdata/${id}`);
             const categoryData = response.data.data;
-            // console.log("Fetched data:", categoryData);
             setData(categoryData);
             setValue('category_name', categoryData.category_name);
             setValue('category_discount', categoryData.category_discount);
@@ -36,23 +36,45 @@ const CategoryAddEdit = () => {
 
     const onSubmit = async (formData) => {
         try {
-            // console.log("Form submitted with data:", formData);
+            const form = new FormData();
+            // Append form data
+            form.append('category_name', formData.category_name);
+            form.append('category_discount', formData.category_discount);
+            form.append('description', formData.description);
+            form.append('url', formData.url);
+            form.append('meta_title', formData.meta_title);
+            form.append('meta_description', formData.meta_description);
+            form.append('meta_keyword', formData.meta_keyword);
+            // Append image file
+            form.append('category_image', formData.category_image[0]);
+            
             if (id) {
-                // console.log("Updating category with ID:", id);
-                // Update category
-                const response = await axios.put(`http://localhost:8081/updatecategory/${id}`, formData);
-                alert(response.data.message); // Access data using response.data
+                const response = await axios.put(`http://localhost:8081/updatecategory/${id}`, form, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                // alert(response.data.message);
+                NotificationManager.success("updated successfully!")
+                setTimeout(()=>{
+                    navigate("/categories");
+                },2000);
             } else {
-                // console.log("Adding new category");
-                // Add category
-                const response = await axios.post('http://localhost:8081/addcategory', formData);
-                alert(response.data.message); // Access data using response.data
+                const response = await axios.post('http://localhost:8081/addcategory', form, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                // alert(response.data.message);
+                NotificationManager.success("form submited successfully!")
+                setTimeout(()=>{
+                    navigate("/categories");
+                },2000);
             }
         } catch (error) {
             console.log(error);
         }
     }
-    
 
     return (
         <div>
@@ -94,7 +116,7 @@ const CategoryAddEdit = () => {
                                                 <div className="card-body">
                                                     <div className="form-group text-start">
                                                         <label htmlFor="exampleInputCategoryfile">Category Image<span className='text-danger'>*</span></label>
-                                                        <input type="file" className="form-control" id="exampleInputCategoryfile" name='category_image'  />
+                                                        <input type="file" className="form-control" id="exampleInputCategoryfile" name='category_image' {...register("category_image", { "required": !id })} />
                                                     </div>
                                                 </div>
                                             </div>

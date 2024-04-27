@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { NotificationManager } from 'react-notifications';
+import { NotificationManager, NotificationContainer } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 const Categories = () => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const Categories = () => {
                 (item && item.url && item.url.toLowerCase().includes(searchData)) ||
                 (item && item.meta_title && item.meta_title.toLowerCase().includes(searchData)) ||
                 (item && item.meta_description && item.meta_description.toLowerCase().includes(searchData)) ||
-                (item && item.meta_keyword && item.meta_keyword.toLowerCase().includes(searchData)) 
+                (item && item.meta_keyword && item.meta_keyword.toLowerCase().includes(searchData))
             );
             setFilterData(filtered);
         }
@@ -41,34 +42,57 @@ const Categories = () => {
         navigate("/categoriesaddedit", { state: { id: id } });
     }
     // delete data
-    const handledelete=async(id)=>{
-        // alert(id)
+    const handledelete = async (id) => {
         try {
             const confirmed = await Swal.fire({
-              title: 'Are you sure?',
-              text: 'This action cannot be undone.',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Yes, delete it!',
+                title: 'Are you sure?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
             });
-        
+
             if (confirmed.isConfirmed) {
-              // Delete the item
-              await axios.delete(`http://localhost:8081/categorydelete/${id}`);
-              NotificationManager.success("successfully!  deleted data");
-              // Fetch the updated data from the server and update the local state
-              const response = await axios.get("http://localhost:8081/categories");
-              setcategorydata(response.data);
-              setFilterData(response.data);
+                // Delete the item
+                await axios.delete(`http://localhost:8081/categorydelete/${id}`);
+                NotificationManager.success("successfully!  deleted data");
+                // Fetch the updated data from the server and update the local state
+                const response = await axios.get("http://localhost:8081/categories");
+
+                setcategorydata(response.data);
+                setFilterData(response.data);
             } else {
-              // Do nothing
-              NotificationManager.error("Data not deletd  successfully!");
+                // Do nothing
+                NotificationManager.error("Data not deletd  successfully!");
             }
-          } catch (error) {
+        } catch (error) {
             console.error(error);
-          }
+        }
+    }
+
+    const toggleclick = async (id, status) => {
+        try {
+            // Determine the new status based on the current status
+            const newstatus = status === 1 ? 0 : 1;
+
+            // Send a PUT request to update the category status
+            await axios.put(`http://localhost:8081/updatecategorystatus/${id}`, { status: newstatus });
+
+            // Update the local state with the new status
+            const updatedata = filterData.map(item => {
+                if (item.id === id) {
+                    return { ...item, status: newstatus };
+                }
+                return item;
+            })
+            setFilterData(updatedata);
+        } catch (error) {
+            // Handle error if the request fails
+            console.error(error);
+            NotificationManager.error("Failed to update status!");
+        }
     }
 
     return (
@@ -129,19 +153,20 @@ const Categories = () => {
                                             <tbody>
                                                 {
                                                     filterData.map((item, index) => (
-                                                        <tr key={item.id} className={item.status === '1' ? 'bg-primary' : ''}>
-                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} style={{width:"1px"}}>{index + 1}</td>
+                                                        <tr key={item.id} className={item.status === 1 ? 'bg-primary' : ''}>
+                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} style={{ width: "1px" }}>{index + 1}</td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.category_name}</td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}><img src={item.category_image} alt={item.category_name} className="img-fluid" style={{ maxWidth: "100px" }} /></td>
-                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} style={{width:"1px"}}>{item.category_discount}</td>
-                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} >{item.description}</td>
-                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} style={{width:"1px"}}>{item.url}</td>
-                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} style={{width:"1px"}}>{item.meta_title}</td>
-                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} style={{width:"1px"}}>{item.meta_keyword}</td>
+                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.category_discount}</td>
+                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.description}</td>
+                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.url}</td>
+                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.meta_title}</td>
+                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.meta_keyword}</td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}><span className={`badge badge-${item.status === 1 ? 'success' : 'danger'}`}>{item.status === 1 ? 'Active' : 'Inactive'}</span></td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>
                                                                 <button className='btn btn-success btn-sm ' onClick={() => handladdedit(item.id)}><i className='fas fa-pencil-alt'></i></button>
-                                                                <button className='btn btn-danger btn-sm' onClick={()=>handledelete(item.id)}><i className='fas fa-trash'></i></button>
+                                                                <button className='btn btn-danger btn-sm' onClick={() => handledelete(item.id)}><i className='fas fa-trash'></i></button>
+                                                                <button className='btn btn-dark btn-sm' onClick={() => toggleclick(item.id, item.status)}><i className={item.status === 1 ? 'fas fa-toggle-on' : 'fas fa-toggle-off'}></i></button>
                                                             </td>
                                                         </tr>
                                                     ))
@@ -155,6 +180,7 @@ const Categories = () => {
                     </div>
                 </div>
             </section>
+            <NotificationContainer />
         </div>
     )
 }

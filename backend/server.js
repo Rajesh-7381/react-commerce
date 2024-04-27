@@ -1,9 +1,13 @@
 const express=require("express");
 const cors=require("cors");
 const mysql2=require("mysql2");
-
 // for hashing password
 const bcrypt=require("bcrypt");
+// for file uploading
+const multer=require("multer");
+// for file date
+const moment=require("moment");
+const path=require("path");
 
 const app=express();
 app.use(cors());
@@ -17,17 +21,32 @@ const db=mysql2.createPool({
     port:"3307"
 });
 
-
+// for category image inserting
+// Multer configuration for file upload
+const storage=multer.diskStorage({
+  destination:(req,file,cb)=>{
+    if(file.fieldname==='image'){
+    cb(null,"uploads/profile/");
+    }else if(file.fieldname === 'category_image'){
+      cb(null,"uploads/categories/");
+    }
+  },
+  filename:(req,file,cb)=>{
+    const ext=path.extname(file.originalname);
+    cb(null,Date.now()+ext);
+  },
+})
+const upload=multer({storage:storage});
 // register user data
-app.post("/register", async (req, res) => {
+app.post("/register",upload.single("image"), async (req, res) => {
   // console.log(req.body); // Log the incoming request body to check data
   const { name, mobile, email, password } = req.body;
   const salt = await bcrypt.genSalt(10);
   const hashedpassword = await bcrypt.hash(password, salt);
 
   db.query(
-      "INSERT INTO AdminUser (name, mobile, email, password) VALUES (?, ?, ?, ?)",
-      [name, mobile, email, hashedpassword],
+      "INSERT INTO AdminUser (name, mobile, email, password,image) VALUES (?, ?, ?, ?,?)",
+      [name, mobile, email, hashedpassword,req.file.filename],
       (err, data) => {
           if (err) {
               console.error("Error submitting form", err);
@@ -211,6 +230,18 @@ app.get("/subadmindata",(req,res)=>{
     // return res.status(200).json({message:"data get successfully!"})
     return res.json(result);
   })
+});
+
+// cms page data
+app.get("/cmspagedata",(req,res)=>{
+  const query="select * from cmspages where deleted_at is null";
+  db.query(query,(err,data)=>{
+    if(err){
+      console.error(err);
+
+    }
+    return res.json(data)
+  })
 })
 
 // FOR CATEGORIES
@@ -227,10 +258,11 @@ app.get("/categories", (req, res) => {
 
 
 // add category
-app.post("/addcategory", (req, res) => {
+app.post("/addcategory",upload.single("category_image"), (req, res) => {
   const { category_name, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
-  const query = "INSERT INTO categories (category_name, category_discount, description, url, meta_title, meta_description, meta_keyword) VALUES ( ?, ?, ?, ?, ?, ?, ?)";
-  db.query(query, [category_name,  category_discount, description, url, meta_title, meta_description, meta_keyword], (err, result) => {
+  const category_image=req.file.filename;
+  const query = "INSERT INTO categories (category_name,category_image, category_discount, description, url, meta_title, meta_description, meta_keyword) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+  db.query(query, [category_name,category_image, category_discount, description, url, meta_title, meta_description, meta_keyword], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: "Internal server error" });
@@ -252,14 +284,18 @@ app.get("/categoryeditdata/:id",(req,res)=>{
     if(result.length===0){
       return res.status(404).json({ message: "data not found!" });
     }
-    return res.status(200).json({message:"data fetched!",data:result[0]});
+    const data={...result[0],category_image:`http://localhost:8081/uploads/categories/${result[0].category_image}`}
+    // console.log(data)
+    return res.status(200).json({message:"data fetched!",data});
   })
 })
 
+
 // update categories
-app.put("/updatecategory/:id", (req, res) => {
+app.put("/updatecategory/:id",upload.single("category_image"), (req, res) => {
   const id = req.params.id;
-  const { category_name, category_image, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
+  const category_image=req.file.filename;
+  const { category_name, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
   const query = "UPDATE categories SET category_name=?, category_image=?, category_discount=?, description=?, url=?, meta_title=?, meta_description=?, meta_keyword=? WHERE id=?";
   db.query(query, [category_name, category_image, category_discount, description, url, meta_title, meta_description, meta_keyword, id], (err, result) => {
     if (err) {
@@ -283,6 +319,21 @@ app.delete("/categorydelete/:id", (req, res) => {
     return res.status(200).json({ message: "Data deleted successfully!" });
   });
 });
+
+// update category status
+app.put("/updatecategorystatus/:id", (req, res) => {
+  const id = req.params.id;
+  const { status } = req.body;
+  const query = "UPDATE categories SET status = ? WHERE id = ?";
+  db.query(query, [status, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    return res.status(200).json({ message: "Status updated successfully!" });
+  });
+});
+
 
 app.listen(8081,()=>{
     console.log("server listening at port 8081");

@@ -16,7 +16,8 @@ const Register = () => {
         name: "",
         mobile: "",
         email: "",
-        password: ""
+        password: "",
+        image: null // Add image field
     };
 
     const validationSchema = Yup.object({
@@ -24,11 +25,29 @@ const Register = () => {
         mobile: Yup.string().max(10).min(10).required("Mobile number required!"),
         email: Yup.string().max(100).min(2).required("Please enter your email!"),
         password: Yup.string().max(30).min(6).required("Please enter your password!"),
+        image: Yup.mixed().test("fileFormat","supported file format is png,webp,jpeg and jpg",(value)=>{
+            if(value){
+                const supportedfileformat =["image/png", "image/webp", "image/jpeg", "image/jpg"];
+                return supportedfileformat.includes(value.type);
+            }
+            return true;
+        }).required("Please upload your image!"), // Add image validation
     });
 
     const onSubmitForm = async (values, action) => {
         try {
-            const response = await axios.post("http://localhost:8081/register", values);
+            const formData = new FormData();
+            formData.append('name', values.name);
+            formData.append('mobile', values.mobile);
+            formData.append('email', values.email);
+            formData.append('password', values.password);
+            formData.append('image', values.image); // Append image data to the form data
+
+            const response = await axios.post("http://localhost:8081/register", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
             console.log(response.data);
             NotificationManager.success("Form submitted successfully!");
             setTimeout(() => {
@@ -92,6 +111,15 @@ const Register = () => {
                                                 ) : null}
                                             </div>
                                             <div className="u-s-m-b-30">
+                                                <label className="gl-label text-start" htmlFor="reg-image">IMAGE <span className='text-danger'>*</span></label>
+                                                <input className="form-control" type="file" id="reg-image" name='image' onChange={(event) => {
+                                                    formik.setFieldValue('image', event.currentTarget.files[0]); // Set image field value
+                                                }} />
+                                                {formik.touched.image && formik.errors.image ? (
+                                                    <div className="text-danger">{formik.errors.image}</div>
+                                                ) : null}
+                                            </div>
+                                            <div className="u-s-m-b-30">
                                                 <label className="gl-label text-start" htmlFor="reg-mobile">MOBILE <span className='text-danger'>*</span></label>
                                                 <input className="input-text input-text--primary-style" type="text" id="reg-mobile" placeholder="MOBILE" name='mobile' onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.mobile} />
                                                 {formik.touched.mobile && formik.errors.mobile ? (
@@ -108,11 +136,11 @@ const Register = () => {
                                             <div className="u-s-m-b-30">
                                                 <label className="gl-label text-start" htmlFor="reg-password">PASSWORD <span className='text-danger'>*</span></label>
                                                 <div className="position-relative">
-                                                    <input className="input-text input-text--primary-style" type={passwordVisibility ? 'text' : 'password'} id="reg-password" placeholder="Enter Password" name='password' onChange={(e) => {
+                                                    <input className="input-text input-text--primary-style" type={passwordVisibility ? 'text' : 'password'} id="reg-password" placeholder="Enter Password" name='password' autoComplete='current-password' onChange={(e) => {
                                                         formik.handleChange(e);
                                                         calculatePasswordStrength(e.target.value); // Calculate password strength on change
                                                     }} onBlur={formik.handleBlur} value={formik.values.password} />
-                                                    <p style={{ position: "absolute", top: "68%", right: "39px", transform: "translateY(-40%)", cursor: "pointer" }} onClick={togglePasswordVisibility}>
+                                                    <p style={{ position: "absolute", top: "50%", right: "9px", transform: "translateY(-40%)", cursor: "pointer" }} onClick={togglePasswordVisibility}>
                                                         {passwordVisibility ? <i className='fas fa-solid fa-eye-slash'></i> : <i className='fas fa-eye'></i>}
                                                     </p>
                                                 </div>
