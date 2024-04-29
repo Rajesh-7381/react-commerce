@@ -37,6 +37,7 @@ const storage=multer.diskStorage({
   },
 })
 const upload=multer({storage:storage});
+
 // register user data
 app.post("/register",upload.single("image"), async (req, res) => {
   // console.log(req.body); // Log the incoming request body to check data
@@ -242,6 +243,79 @@ app.get("/cmspagedata",(req,res)=>{
     }
     return res.json(data)
   })
+});
+
+// cms page staus change
+app.put("/handlecmspagestatus/:id",(req,res)=>{
+  const id=req.params.id;
+  const {status}=req.body;
+  const query="update cmspages set status=? where id =?";
+  db.query(query,[status,id],(err,result)=>{
+    if(err){
+      console.error(err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    return res.status(200).json({message:"status updated successfully!"});
+
+  });
+});
+
+// cms page delete data
+app.delete("/cmspagedelete/:id",(req,res)=>{
+  const id=req.params.id;
+  const query="update cmspages set deleted_at=CURRENT_TIMESTAMP where id=?";
+  db.query(query,id,(err,result)=>{
+    if(err){
+      console.error(err)
+      return res.status(500).json({message:"internal server error"});
+    }
+    return res.status(200).json({message:"deleted successfully!"});
+  })
+})
+
+// update cmspage
+app.put("/cmsupdatepage/:id", upload.none(), (req, res) => {
+  const id = req.params.id;
+  const { title, url, description, meta_title, meta_keywords, meta_description } = req.body;
+
+  const query = "UPDATE cmspages SET title=?, url=?, description=?, meta_title=?, meta_keywords=?, meta_description=? WHERE id =?";
+  db.query(query, [title, url, description, meta_title, meta_keywords, meta_description, id], (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: "Internal server error" });
+      }
+      return res.status(200).json({ message: "Update successful" });
+  })
+})
+
+// add cms pages
+app.post("/cmsaddpage", upload.none(), (req, res) => {
+  const { title, url, description, meta_title, meta_keywords, meta_description } = req.body;
+
+  const query = "INSERT INTO cmspages (title, url, description, meta_title, meta_keywords, meta_description) VALUES (?, ?, ?, ?, ?, ?)";
+  db.query(query, [title, url, description, meta_title, meta_keywords, meta_description], (err, result) => {
+      if (err) {
+          console.error(err);
+          return res.status(500).json({ message: "Internal server error" });
+      }
+      return res.status(200).json({ message: "Insertion successful" });
+  })
+})
+
+// cms edit data
+app.get("/cmspageeditdata/:id",(req,res)=>{
+  const id=req.params.id;
+  const query="SELECT * FROM cmspages WHERE id=?";
+  db.query(query,id,(err,result)=>{
+    if(err){
+      console.error(err);
+      return res.status(500).json({message:"Internal server error"});
+    }
+    if(result.length===0){
+      return res.status(404).json({ message: "Data not found!" });
+    }
+    return res.status(200).json({ data: result[0] });
+  })
 })
 
 // FOR CATEGORIES
@@ -259,10 +333,10 @@ app.get("/categories", (req, res) => {
 
 // add category
 app.post("/addcategory",upload.single("category_image"), (req, res) => {
-  const { category_name, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
+  const { category_name,parent_id, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
   const category_image=req.file.filename;
-  const query = "INSERT INTO categories (category_name,category_image, category_discount, description, url, meta_title, meta_description, meta_keyword) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-  db.query(query, [category_name,category_image, category_discount, description, url, meta_title, meta_description, meta_keyword], (err, result) => {
+  const query = "INSERT INTO categories (category_name,parent_id,category_image, category_discount, description, url, meta_title, meta_description, meta_keyword) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)";
+  db.query(query, [category_name,parent_id,category_image, category_discount, description, url, meta_title, meta_description, meta_keyword], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: "Internal server error" });
@@ -292,12 +366,12 @@ app.get("/categoryeditdata/:id",(req,res)=>{
 
 
 // update categories
-app.put("/updatecategory/:id",upload.single("category_image"), (req, res) => {
+app.put("/updatecategory/:id", upload.single("category_image"), (req, res) => {
   const id = req.params.id;
-  const category_image=req.file.filename;
-  const { category_name, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
-  const query = "UPDATE categories SET category_name=?, category_image=?, category_discount=?, description=?, url=?, meta_title=?, meta_description=?, meta_keyword=? WHERE id=?";
-  db.query(query, [category_name, category_image, category_discount, description, url, meta_title, meta_description, meta_keyword, id], (err, result) => {
+  const category_image = req.file.filename;
+  const { category_name, parent_id, category_discount, description, url, meta_title, meta_description, meta_keyword } = req.body;
+  const query = "UPDATE categories SET category_name=?, parent_id=?, category_image=?, category_discount=?, description=?, url=?, meta_title=?, meta_description=?, meta_keyword=? WHERE id=?";
+  db.query(query, [category_name, parent_id, category_image, category_discount, description, url, meta_title, meta_description, meta_keyword, id], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ message: "Internal server error" });
@@ -305,7 +379,6 @@ app.put("/updatecategory/:id",upload.single("category_image"), (req, res) => {
     return res.status(200).json({ message: "Update successful!" });
   });
 });
-
 
 // delete category
 app.delete("/categorydelete/:id", (req, res) => {
@@ -334,6 +407,30 @@ app.put("/updatecategorystatus/:id", (req, res) => {
   });
 });
 
+// count distinct  categories
+app.get("/uniquecategories", (req, res) => {
+  const query = "SELECT COUNT(DISTINCT category_name) AS total FROM categories";
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    } else {
+      const catcount = data[0].total;
+      res.json({ catcount: catcount });
+    }
+  });
+});
+
+app.get("/categories2", (req, res) => {
+  const query = "SELECT distinct parent_id FROM categories WHERE deleted_at IS NULL  ";
+  db.query(query, (err, data) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    return res.json(data);
+  });
+});
 
 app.listen(8081,()=>{
     console.log("server listening at port 8081");

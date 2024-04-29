@@ -11,6 +11,7 @@ const Categories = () => {
     const [filterData, setFilterData] = useState([]);
 
     useEffect(() => {
+        document.title='Categories';
         handlecategorydata();
     }, []);
 
@@ -140,6 +141,7 @@ const Categories = () => {
                                                 <tr>
                                                     <th className='bg-dark text-light'>SL NO.</th>
                                                     <th className='bg-dark text-light'>CATEGORY NAME</th>
+                                                    <th className='bg-dark text-light'>PARENT CATEGORY </th>
                                                     <th className='bg-dark text-light'>CATEGORY IMAGE</th>
                                                     <th className='bg-dark text-light'>CATEGORY DISCOUNT</th>
                                                     <th className='bg-dark text-light'>DESCRIPTION</th>
@@ -156,7 +158,16 @@ const Categories = () => {
                                                         <tr key={item.id} className={item.status === 1 ? 'bg-primary' : ''}>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'} style={{ width: "1px" }}>{index + 1}</td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.category_name}</td>
-                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}><img src={item.category_image} alt={item.category_name} className="img-fluid" style={{ maxWidth: "100px" }} /></td>
+                                                            <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>
+                                                                {/* Check if the category has a parent */}
+                                                                {item.parent_id ? 
+                                                                    // If the category has a parent, find the parent category in the categorydata array
+                                                                    categorydata.find(cat => cat.id === item.parent_id).category_name 
+                                                                    // If the category does not have a parent, display "No Parent"
+                                                                    : <span className="badge badge-pill badge-secondary">No Parent</span>
+                                                                }
+                                                            </td>
+                                                                                                                    <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}><img src={item.category_image} alt={item.category_name} className="img-fluid" style={{ maxWidth: "100px" }} /></td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.category_discount}</td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.description}</td>
                                                             <td className={item.status === 1 ? 'bg-primary' : 'bg-warning'}>{item.url}</td>

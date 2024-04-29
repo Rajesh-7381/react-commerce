@@ -41,6 +41,7 @@ install bootstarp icons ->npm install bootstrap-icons add in index.js-> import "
 12. -><npm i zxcvbn> (for progress bar(strong password))
 13. -><npm install react-hook-form>(for form validation and update purpose)
 14. -><npm install chart.js>(for pie chart data shown)
+14. -><npm install react-google-recaptcha>(google captch integration) //r..je..u...7...2@gm....c.m  // domain name->localhost 
 
 abstract::
 =========
@@ -100,6 +101,12 @@ day-10::
 ->create cms page (to admin perform all functionality)
 ->in category and register profile page image inserting
 ->in categories toggle status on/off
+
+day-10::
+======
+->add,edit and delete functionality in cmspages
+->googgle recaptch integration in register.jsx
+
 
 
 

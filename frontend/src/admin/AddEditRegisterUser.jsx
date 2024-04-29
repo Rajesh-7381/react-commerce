@@ -26,6 +26,9 @@ const AddEditRegisterUser = (args) => {
 
   const [id, setId] = useState(""); // Define id state
   const [passwordstrength,setPasswordStrength]=useState(0);
+  useEffect(()=>{
+    document.title='AddEditRegister';
+  })
 
   const toggle = async (id) => {
     try {

@@ -11,6 +11,7 @@ import SubAdminAddEdit from './admin/SubAdminAddEdit';
 import Categories from './admin/Categories/Categories';
 import CategoryAddEdit from './admin/Categories/CategoryAddEdit';
 import Cmspages from './admin/CmsPages/Cmspages';
+import CmspageAddEdit from './admin/CmsPages/CmspageAddEdit';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path='/categories' element={< Categories/>}></Route>
           <Route path='/categoriesaddedit' element={< CategoryAddEdit/>}></Route>
           <Route path='/cmspages' element={< Cmspages/>}></Route>
+          <Route path='/cmspageaddedit' element={< CmspageAddEdit/>}></Route>
 
 
 

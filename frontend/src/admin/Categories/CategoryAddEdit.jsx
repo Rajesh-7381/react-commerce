@@ -2,20 +2,33 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { NotificationManager,NotificationContainer } from 'react-notifications';
+import { NotificationManager, NotificationContainer } from 'react-notifications';
 
 const CategoryAddEdit = () => {
-    const  location  = useLocation();
+    const location = useLocation();
     const { register, handleSubmit, setValue } = useForm();
     const [data, setData] = useState({});
+    const [categories, setCategories] = useState([]);
     const id = location.state ? location.state.id : null;
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
     useEffect(() => {
+        document.title = 'AddEditCategories';
         if (id) {
             handleCategoryUpdate(id);
         }
-    }, [id])
+        fetchCategories();
+    }, [id]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8081/categories2`);
+            setCategories(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    
 
     const handleCategoryUpdate = async (id) => {
         try {
@@ -29,11 +42,23 @@ const CategoryAddEdit = () => {
             setValue('meta_title', categoryData.meta_title);
             setValue('meta_description', categoryData.meta_description);
             setValue('meta_keyword', categoryData.meta_keyword);
+            setValue('parent_id', categoryData.parent_id); // Set the parent category value
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
+    const renderCategories = (categories, level = 0) => {
+        return categories.map(category => {
+            const paddingLeft = level * 20; // Adjust the padding based on the level
+            return (
+                <option key={category.id} value={category.id} style={{ paddingLeft: `${paddingLeft}px` }}>
+                    {level === 0 ? '' : '->'.repeat(level)} {category.parent_id}
+                </option>
+            );
+        });
+    };
+    
     const onSubmit = async (formData) => {
         try {
             const form = new FormData();
@@ -45,36 +70,35 @@ const CategoryAddEdit = () => {
             form.append('meta_title', formData.meta_title);
             form.append('meta_description', formData.meta_description);
             form.append('meta_keyword', formData.meta_keyword);
+            form.append('parent_id', formData.parent_id); // Append parent category ID
             // Append image file
             form.append('category_image', formData.category_image[0]);
-            
+
             if (id) {
                 const response = await axios.put(`http://localhost:8081/updatecategory/${id}`, form, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                // alert(response.data.message);
-                NotificationManager.success("updated successfully!")
-                setTimeout(()=>{
+                NotificationManager.success("updated successfully!");
+                setTimeout(() => {
                     navigate("/categories");
-                },2000);
+                }, 2000);
             } else {
                 const response = await axios.post('http://localhost:8081/addcategory', form, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-                // alert(response.data.message);
-                NotificationManager.success("form submited successfully!")
-                setTimeout(()=>{
+                NotificationManager.success("form submitted successfully!");
+                setTimeout(() => {
                     navigate("/categories");
-                },2000);
+                }, 2000);
             }
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     return (
         <div>
@@ -117,6 +141,25 @@ const CategoryAddEdit = () => {
                                                     <div className="form-group text-start">
                                                         <label htmlFor="exampleInputCategoryfile">Category Image<span className='text-danger'>*</span></label>
                                                         <input type="file" className="form-control" id="exampleInputCategoryfile" name='category_image' {...register("category_image", { "required": !id })} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-md-12">
+                                                <div className="card-body">
+                                                    <div className="form-group text-start">
+                                                        <label htmlFor="exampleInputCategoryselectid">Parent Category <span className='text-danger'>*</span></label>
+                                                        <select
+                                                            className="form-control"
+                                                            name="parent_id"
+                                                            style={{ width: '100%' }}
+                                                            {...register("parent_id", { required: true })}
+                                                            defaultValue={data.parent_id ? data.parent_id : ""}
+                                                        >
+                                                            <option value="">Main Category</option>
+                                                            {renderCategories(categories)}
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -175,6 +218,7 @@ const CategoryAddEdit = () => {
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div className='text-start'>
                                             <button type="submit" className='btn btn-primary'>{id ? "Update" : "Submit"}</button>
                                         </div>
@@ -185,6 +229,7 @@ const CategoryAddEdit = () => {
                     </section>
                 </div>
             </div>
+            <NotificationContainer />
         </div>
     )
 }

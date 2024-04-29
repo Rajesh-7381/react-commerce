@@ -13,9 +13,11 @@ const Dashboard1 = () => {
   const [usercount, setUserCount] = useState(0);  
   const [admincount, setAdminCount] = useState(0);  
   const [subadmincount, setSubadminCount] = useState(0); 
+  const [categoriescount, setcategoriesCount] = useState(0); 
   const [userData,setUserData]=useState(null);
   
   useEffect(() => {
+    document.title='DashBoard';
     const loggedin=sessionStorage.getItem("loggedin");
     if(!loggedin || loggedin !=="1"){
       navigate("/");
@@ -43,10 +45,11 @@ const Dashboard1 = () => {
         const userResponse = await axios.get("http://localhost:8081/countuser");
         const adminResponse = await axios.get("http://localhost:8081/countadmin");
         const subadminResponse = await axios.get("http://localhost:8081/countsubadmin");
-
+        const uniquecategoriesResponse =await axios.get("http://localhost:8081/uniquecategories");
         setUserCount(userResponse.data.count);
         setAdminCount(adminResponse.data.Admincount);
         setSubadminCount(subadminResponse.data.subaAdmincount);
+        setcategoriesCount(uniquecategoriesResponse.data.catcount)
         // Cookies.get("id",id);
       } catch (error) {
         console.error("Error fetching count data:", error);
@@ -393,13 +396,13 @@ const Dashboard1 = () => {
             {/* small box */}
             <div className="small-box bg-danger">
               <div className="inner">
-                <h3>65</h3>
-                <p>Unique Visitors</p>
+                <h3>{categoriescount}</h3>
+                <p>Unique Categories</p>
               </div>
               <div className="icon">
-                <i className="ion ion-pie-graph" />
+                <i className="fas fa-shopping-cart" />
               </div>
-              <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right" /></a>
+              <Link to={"/categories"} className="small-box-footer">More info <i className="fas fa-arrow-circle-right" /></Link>
             </div>
           </div>
           {/* ./col */}

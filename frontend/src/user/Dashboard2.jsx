@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 const Dashboard2 = () => {
   const navigate=useNavigate();
   useEffect(()=>{
+    document.title='Dashboard';
     const loggedin=sessionStorage.getItem("loggedin");
     if(!loggedin || loggedin!=="1"){
       navigate("/");

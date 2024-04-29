@@ -15,6 +15,7 @@ const SubAdminAddEdit = () => {
     const id = location.state ? location.state.id : null;
 
     useEffect(() => {
+        document.title='SubAdminAddEdit';
         if (id) {
             handledit(id);
         }

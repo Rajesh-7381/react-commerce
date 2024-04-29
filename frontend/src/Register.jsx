@@ -5,19 +5,21 @@ import 'react-notifications/lib/notifications.css';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
-import zxcvbn from 'zxcvbn'; // Import zxcvbn library
+import zxcvbn from 'zxcvbn';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const Register = () => {
     const navigate = useNavigate();
     const [passwordVisibility, setPasswordVisibility] = useState(false);
-    const [passwordStrength, setPasswordStrength] = useState(0); // State for password strength
+    const [passwordStrength, setPasswordStrength] = useState(0);
+    const [cap,setcap]=useState(null);
 
     const initialValues = {
         name: "",
         mobile: "",
         email: "",
         password: "",
-        image: null // Add image field
+        image: null,
     };
 
     const validationSchema = Yup.object({
@@ -31,7 +33,7 @@ const Register = () => {
                 return supportedfileformat.includes(value.type);
             }
             return true;
-        }).required("Please upload your image!"), // Add image validation
+        }).required("Please upload your image!"),
     });
 
     const onSubmitForm = async (values, action) => {
@@ -41,7 +43,7 @@ const Register = () => {
             formData.append('mobile', values.mobile);
             formData.append('email', values.email);
             formData.append('password', values.password);
-            formData.append('image', values.image); // Append image data to the form data
+            formData.append('image', values.image);
 
             const response = await axios.post("http://localhost:8081/register", formData, {
                 headers: {
@@ -66,22 +68,20 @@ const Register = () => {
         onSubmit: onSubmitForm
     });
 
-    // Function to handle password visibility
     const togglePasswordVisibility = () => {
         setPasswordVisibility(!passwordVisibility);
     };
 
-    // Function to calculate password strength
     const calculatePasswordStrength = (password) => {
         const result = zxcvbn(password);
         setPasswordStrength(result.score);
     };
 
+    const recaptchaRef = React.createRef();
+
     return (
         <div>
-            {/*====== Section 2 ======*/}
             <div className="u-s-p-b-60">
-                {/*====== Section Intro ======*/}
                 <div className="section__intro u-s-m-b-60">
                     <div className="container">
                         <div className="row">
@@ -93,8 +93,6 @@ const Register = () => {
                         </div>
                     </div>
                 </div>
-                {/*====== End - Section Intro ======*/}
-                {/*====== Section Content ======*/}
                 <div className="section__content">
                     <div className="container">
                         <div className="row row--center ">
@@ -113,7 +111,7 @@ const Register = () => {
                                             <div className="u-s-m-b-30">
                                                 <label className="gl-label text-start" htmlFor="reg-image">IMAGE <span className='text-danger'>*</span></label>
                                                 <input className="form-control" type="file" id="reg-image" name='image' onChange={(event) => {
-                                                    formik.setFieldValue('image', event.currentTarget.files[0]); // Set image field value
+                                                    formik.setFieldValue('image', event.currentTarget.files[0]);
                                                 }} />
                                                 {formik.touched.image && formik.errors.image ? (
                                                     <div className="text-danger">{formik.errors.image}</div>
@@ -138,7 +136,7 @@ const Register = () => {
                                                 <div className="position-relative">
                                                     <input className="input-text input-text--primary-style" type={passwordVisibility ? 'text' : 'password'} id="reg-password" placeholder="Enter Password" name='password' autoComplete='current-password' onChange={(e) => {
                                                         formik.handleChange(e);
-                                                        calculatePasswordStrength(e.target.value); // Calculate password strength on change
+                                                        calculatePasswordStrength(e.target.value);
                                                     }} onBlur={formik.handleBlur} value={formik.values.password} />
                                                     <p style={{ position: "absolute", top: "50%", right: "9px", transform: "translateY(-40%)", cursor: "pointer" }} onClick={togglePasswordVisibility}>
                                                         {passwordVisibility ? <i className='fas fa-solid fa-eye-slash'></i> : <i className='fas fa-eye'></i>}
@@ -147,7 +145,6 @@ const Register = () => {
                                                 {formik.touched.password && formik.errors.password ? (
                                                     <div className="text-danger">{formik.errors.password}</div>
                                                 ) : null}
-                                                {/* Password strength indicator */}
                                                 <div className="progress mt-2">
                                                     <div
                                                         className={`progress-bar ${passwordStrength === 0 ? 'bg-danger' : passwordStrength === 1 ? 'bg-warning' : passwordStrength === 2 ? 'bg-info' : passwordStrength === 3 ? 'bg-primary' : 'bg-success'}`}
@@ -165,10 +162,15 @@ const Register = () => {
                                                 </div>
                                             </div>
                                             <div className="u-s-m-b-15">
+                                                <ReCAPTCHA
+                                                    ref={recaptchaRef}
+                                                    sitekey="6Lf0AcopAAAAABiOyhyphLfETW8tsx8KW9Xxs5ah" //r........2@gm....com
+                                                    onChange={(val)=>setcap(val)}
+                                                />
                                                 <NotificationContainer />
-                                                <button className="btn btn--e-transparent-brand-b-2 btn-outline-primary w-75" type="submit">CREATE</button>
+                                                <button className="btn btn--e-transparent-brand-b-2 btn-outline-primary w-75" disabled={!cap} type="submit">CREATE</button>
                                             </div>
-                                            <Link className="gl-link" to={'/'}>Already have an Account? Login Now</Link>
+                                            <Link className="gl-link"  to={'/'}>Already have an Account? Login Now</Link>
                                         </form>
                                     </div>
                                 </div>
@@ -176,9 +178,7 @@ const Register = () => {
                         </div>
                     </div>
                 </div>
-                {/*====== End - Section Content ======*/}
             </div>
-            {/*====== End - Section 2 ======*/}
         </div>
     );
 }

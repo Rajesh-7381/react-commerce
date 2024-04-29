@@ -21,6 +21,7 @@ const Subadmin = (args) => {
   
 
     useEffect(() => {
+        document.title='SubAdmin';
         handleData();
     }, []);
 
